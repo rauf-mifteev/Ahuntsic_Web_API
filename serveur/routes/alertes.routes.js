@@ -10,12 +10,41 @@ const NIVEAUX_VALIDES = ['info', 'avertissement', 'critique'];
 
 /* ------------------------------------------------------------
    GET /api/alertes
-   Retourne toutes les alertes (200 OK).
+   Retourne toutes les alertes, ou seulement celles d'un niveau
+   si le paramètre de requête ?niveau=... est présent.
+
+   Exemples :
+     GET /api/alertes              -> toutes les alertes
+     GET /api/alertes?niveau=critique -> seulement les critiques
    ------------------------------------------------------------ */
 router.get('/', (req, res) => {
-  console.log(`GET /api/alertes — ${alertes.length} alerte(s) envoyée(s)`);
-  res.json(alertes);
+  // req.query contient les paramètres de la chaîne de requête.
+  // Pour /api/alertes?niveau=critique, req.query.niveau vaut "critique".
+  // Pour /api/alertes, req.query.niveau vaut undefined.
+  const { niveau } = req.query;
+
+  // Si le paramètre niveau n'est pas fourni, on retourne tout.
+  if (niveau === undefined) {
+    console.log(`GET /api/alertes — ${alertes.length} alerte(s) envoyée(s)`);
+    return res.json(alertes);
+  }
+
+  // Si niveau est fourni mais n'est pas une valeur autorisée, on
+  // répond 400 pour signaler l'erreur au client.
+  if (!NIVEAUX_VALIDES.includes(niveau)) {
+    console.error(`GET /api/alertes — niveau invalide : "${niveau}"`);
+    return res.status(400).json({
+      message: `Le paramètre niveau doit etre: info, avertissement ou critique. Valeur reçue : "${niveau}".`
+    });
+  }
+
+  // On filtre le tableau pour ne garder que les alertes du niveau demandé.
+  const resultat = alertes.filter(a => a.niveau === niveau);
+
+  console.log(`GET /api/alertes?niveau=${niveau} — ${resultat.length} alerte(s) trouvée(s)`);
+  res.json(resultat);
 });
+
 
 /* ------------------------------------------------------------
    GET /api/alertes/:id
