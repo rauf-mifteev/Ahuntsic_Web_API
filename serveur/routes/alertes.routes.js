@@ -5,6 +5,9 @@ const express = require('express');
 const router  = express.Router();
 const alertes = require('../data/alertes');
 
+// Valeurs autorisées pour le champ "niveau".
+const NIVEAUX_VALIDES = ['info', 'avertissement', 'critique'];
+
 /* ------------------------------------------------------------
    GET /api/alertes
    Retourne toutes les alertes (200 OK).
@@ -44,6 +47,77 @@ router.get('/:id', (req, res) => {
 
   console.log(`GET /api/alertes/:id — alerte trouvée (id = ${id})`);
   res.json(alerte);
+});
+
+/* ------------------------------------------------------------
+   POST /api/alertes
+   Crée une nouvelle alerte.
+
+   Corps attendu du client :
+     { source, type, niveau, message }
+
+   Le serveur génère lui-même : id, horodatage, resolue.
+   Tout id / horodatage / resolue envoyé par le client est ignoré.
+   ------------------------------------------------------------ */
+router.post('/', (req, res) => {
+  console.log('POST /api/alertes — corps reçu :', req.body);
+
+  // On extrait uniquement les quatre champs attendus.
+  // En nommant explicitement les champs, on ignore automatiquement
+  // tout ce que le client enverrait en plus (id, resolue, etc.).
+  const { source, type, niveau, message } = req.body;
+
+  // --- Validation ---
+  // On construit une liste de problèmes trouvés.
+  const erreurs = [];
+
+  if (typeof source !== 'string' || source.trim() === '') {
+    erreurs.push('Le champ source est obligatoire et doit être une chaîne non vide.');
+  }
+  if (typeof type !== 'string' || type.trim() === '') {
+    erreurs.push('Le champ type est obligatoire et doit être une chaîne non vide.');
+  }
+  if (typeof niveau !== 'string' || niveau.trim() === '') {
+    erreurs.push('Le champ niveau est obligatoire.');
+  } else if (!NIVEAUX_VALIDES.includes(niveau.trim())) {
+    erreurs.push(`Le champ niveau doit valoir info, avertissement ou critique. Valeur reçue : "${niveau}".`);
+  }
+  if (typeof message !== 'string' || message.trim() === '') {
+    erreurs.push('Le champ message est obligatoire et doit être une chaîne non vide.');
+  }
+
+  // S'il y a des erreurs, on répond 400 avec le premier message.
+  if (erreurs.length > 0) {
+    console.error('POST /api/alertes — validation échouée :', erreurs);
+    return res.status(400).json({ message: erreurs[0] });
+  }
+
+  // --- Génération des champs côté serveur ---
+
+  // L'id est calculé en prenant le plus grand id existant et en ajoutant 1.
+  // Si le tableau est vide, on commence à 1.
+  const nouvelId = alertes.length > 0
+    ? Math.max(...alertes.map(a => a.id)) + 1
+    : 1;
+
+  const nouvelleAlerte = {
+    id:         nouvelId,
+    source:     source.trim(),
+    type:       type.trim(),
+    niveau:     niveau.trim(),
+    message:    message.trim(),
+    horodatage: new Date().toISOString(),  // format ISO 8601
+    resolue:    false                      // toujours false à la création
+  };
+
+  // Ajout dans le tableau en mémoire.
+  alertes.push(nouvelleAlerte);
+
+  console.log('POST /api/alertes — alerte créée :', nouvelleAlerte);
+
+  // 201 Created = une ressource a été créée avec succès.
+  // On renvoie l'alerte complète pour que le client connaisse son id.
+  res.status(201).json(nouvelleAlerte);
 });
 
 module.exports = router;
