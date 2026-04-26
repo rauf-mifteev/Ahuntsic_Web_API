@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Supervision d'alertes — Examen pratique 1</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="entete">
+    <h1>Console de supervision — Alertes</h1>
+    <p class="sous-titre">
+      420-317-AH — Examen pratique 1 — Interface fournie
+    </p>
+  </header>
+
+  <main class="contenu">
+
+    <!-- ======================================================== -->
+    <!--  SECTION 1 : Filtre + liste des alertes                  -->
+    <!--                                                          -->
+    <!--  L'interface interroge le serveur à chaque action :      -->
+    <!--    - chargement initial ;                                -->
+    <!--    - clic sur « Rafraîchir » ;                           -->
+    <!--    - changement du filtre « Niveau » ;                   -->
+    <!--    - résolution ou suppression d'une alerte.             -->
+    <!--                                                          -->
+    <!--  L'étudiant NE DOIT PAS modifier ce fichier HTML.        -->
+    <!--  Son travail : écrire le serveur Express attendu.        -->
+    <!-- ======================================================== -->
+    <section class="section">
+      <div class="barre-section">
+        <h2>Alertes en cours</h2>
+        <div class="actions-inline">
+          <label for="filtre-niveau" class="label-inline">Niveau :</label>
+          <select id="filtre-niveau">
+            <option value="">— Tous —</option>
+            <option value="info">info</option>
+            <option value="avertissement">avertissement</option>
+            <option value="critique">critique</option>
+          </select>
+          <button id="btn-rafraichir" type="button">Rafraîchir</button>
+        </div>
+      </div>
+
+      <div id="liste-alertes" class="grille-alertes">
+        <!-- Les cartes d'alertes sont injectées par app.js. -->
+      </div>
+
+      <p id="message-alertes" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ======================================================== -->
+    <!--  SECTION 2 : Ajout d'une nouvelle alerte                 -->
+    <!--                                                          -->
+    <!--  Le client envoie : { source, type, niveau, message }    -->
+    <!--                                                          -->
+    <!--  Le SERVEUR est responsable de :                         -->
+    <!--    - générer le id ;                                     -->
+    <!--    - générer l'horodatage ;                              -->
+    <!--    - initialiser « resolue » à false ;                   -->
+    <!--    - valider que les champs obligatoires sont présents ; -->
+    <!--    - vérifier que « niveau » est l'une des valeurs       -->
+    <!--      autorisées (info | avertissement | critique).       -->
+    <!-- ======================================================== -->
+    <section class="section">
+      <h2>Enregistrer une nouvelle alerte</h2>
+
+      <form id="form-ajout" class="formulaire" novalidate>
+        <div class="champ">
+          <label for="champ-source">Source</label>
+          <input
+            id="champ-source"
+            name="source"
+            type="text"
+            placeholder="Ex. : Serveur web-01"
+          />
+        </div>
+
+        <div class="champ">
+          <label for="champ-type">Type</label>
+          <input
+            id="champ-type"
+            name="type"
+            type="text"
+            placeholder="Ex. : cpu, memoire, disque, reseau, securite"
+          />
+        </div>
+
+        <div class="champ">
+          <label for="champ-niveau">Niveau</label>
+          <select id="champ-niveau" name="niveau">
+            <option value="">— Choisir —</option>
+            <option value="info">info</option>
+            <option value="avertissement">avertissement</option>
+            <option value="critique">critique</option>
+          </select>
+        </div>
+
+        <div class="champ champ-large">
+          <label for="champ-message">Message</label>
+          <input
+            id="champ-message"
+            name="message"
+            type="text"
+            placeholder="Ex. : Utilisation CPU à 95 %"
+          />
+        </div>
+
+        <button type="submit">Enregistrer</button>
+      </form>
+
+      <p id="message-ajout" class="message" role="status" aria-live="polite"></p>
+    </section>
+
+  </main>
+
+  <footer class="pied">
+    <p>Interface fournie — Examen pratique 1</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
