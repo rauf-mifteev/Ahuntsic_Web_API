@@ -149,4 +149,47 @@ router.post('/', (req, res) => {
   res.status(201).json(nouvelleAlerte);
 });
 
+/* ------------------------------------------------------------
+   PATCH /api/alertes/:id/resolue
+   Marque l'alerte comme résolue (resolue = true).
+   Aucun corps n'est requis dans la requête.
+
+   - 400 si :id est invalide.
+   - 404 si l'alerte n'existe pas.
+   - 400 si l'alerte est déjà résolue.
+   - 200 + alerte mise à jour si succès.
+   ------------------------------------------------------------ */
+router.patch('/:id/resolue', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (Number.isNaN(id) || id <= 0) {
+    console.error(`PATCH /api/alertes/:id/resolue — id invalide : "${req.params.id}"`);
+    return res.status(400).json({
+      message: 'Le paramètre id doit être un nombre entier positif.'
+    });
+  }
+
+  // On utilise find() pour obtenir une référence directe à l'objet
+  // dans le tableau. Toute modification de cet objet modifie aussi
+  // le tableau (même objet en mémoire, pas une copie).
+  const alerte = alertes.find(a => a.id === id);
+
+  if (!alerte) {
+    console.error(`PATCH /api/alertes/:id/resolue — alerte introuvable (id = ${id})`);
+    return res.status(404).json({ message: 'Alerte introuvable.' });
+  }
+
+  if (alerte.resolue) {
+    console.error(`PATCH /api/alertes/:id/resolue — alerte déjà résolue (id = ${id})`);
+    return res.status(400).json({ message: 'Cette alerte est déjà marquée comme résolue.' });
+  }
+
+  // Modification directe de la propriété dans le tableau.
+  alerte.resolue = true;
+
+  console.log(`PATCH /api/alertes/:id/resolue — alerte ${id} marquée résolue`);
+  res.json(alerte);
+});
+
+
 module.exports = router;
