@@ -191,5 +191,38 @@ router.patch('/:id/resolue', (req, res) => {
   res.json(alerte);
 });
 
+/* ------------------------------------------------------------
+   DELETE /api/alertes/:id
+   Supprime une alerte du tableau en mémoire.
+
+   - 400 si :id est invalide.
+   - 404 si l'alerte n'existe pas.
+   - 200 + confirmation JSON si succès.
+   ------------------------------------------------------------ */
+router.delete('/:id', (req, res) => {
+  const id = parseInt(req.params.id, 10);
+
+  if (Number.isNaN(id) || id <= 0) {
+    console.error(`DELETE /api/alertes/:id — id invalide : "${req.params.id}"`);
+    return res.status(400).json({
+      message: 'Le paramètre id doit être un nombre entier positif.'
+    });
+  }
+
+  // findIndex() retourne la position (indice) de l'élément dans le tableau,
+  // ou -1 si aucun élément ne correspond.
+  const index = alertes.findIndex(a => a.id === id);
+
+  if (index === -1) {
+    console.error(`DELETE /api/alertes/:id — alerte introuvable (id = ${id})`);
+    return res.status(404).json({ message: 'Alerte introuvable.' });
+  }
+
+  // splice(index, 1) retire 1 élément à la position "index" du tableau.
+  alertes.splice(index, 1);
+
+  console.log(`DELETE /api/alertes/:id — alerte ${id} supprimée`);
+  res.json({ message: 'Alerte supprimée.', id: id });
+});
 
 module.exports = router;
