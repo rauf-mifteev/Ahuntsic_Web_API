@@ -102,9 +102,15 @@ TP_1/
 Chaque requête reçue est affichée dans le terminal avec l'heure, la méthode, l'URL, le code de statut et la durée :
 
 ```
-Serveur en écoute sur le port 3000
-[2026-05-01T10:30:00.000Z] GET /api/alertes -> 200 (12 ms)
-[2026-05-01T10:30:01.000Z] POST /api/alertes -> 201 (3 ms)
-[2026-05-01T10:30:02.000Z] PATCH /api/alertes/1/resolue -> 200 (1 ms)
-[2026-05-01T10:30:03.000Z] DELETE /api/alertes/2 -> 200 (1 ms)
+[2026-05-01T18:03:54.001Z] GET /api/alertes?niveau=info -> 200 (2 ms)
+GET /api/alertes — 4 alerte(s) envoyée(s)
+[2026-05-01T18:04:32.032Z] GET /api/alertes -> 200 (3 ms)
+DELETE /api/alertes/:id — alerte 3 supprimée
+[2026-05-01T18:04:48.059Z] DELETE /api/alertes/3 -> 200 (3 ms)
+GET /api/alertes — 3 alerte(s) envoyée(s)
+[2026-05-01T18:04:48.094Z] GET /api/alertes -> 200 (2 ms)
+PATCH /api/alertes/:id/resolue — alerte 4 marquée résolue
+[2026-05-01T18:05:30.170Z] PATCH /api/alertes/4/resolue -> 200 (2 ms)
+GET /api/alertes — 3 alerte(s) envoyée(s)
+[2026-05-01T18:05:30.199Z] GET /api/alertes -> 200 (2 ms)
 ```
