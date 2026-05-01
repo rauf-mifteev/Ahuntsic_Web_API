@@ -33,7 +33,8 @@ app.use((req, res, next) => {
   // le code de statut (res.statusCode).
   res.on('finish', () => {
     const duree = Date.now() - debut;
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} -> ${res.statusCode} (${duree} ms)`);
+    //console.log(`[${new Date().toISOString()}] ${req.method} ${req.url} -> ${res.statusCode} (${duree} ms)`);
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl} -> ${res.statusCode} (${duree} ms)`); 
   });
 
   // Passe au middleware suivant (ou à la route).
